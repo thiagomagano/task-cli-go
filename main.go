@@ -12,7 +12,7 @@ type Task struct {
 	Status string `json:"status"`
 }
 
-const DB_PATH = "db.json" //Caminho para o arquivo
+const DB_PATH = "db.json" //Caminho para o arquivo // Connection Pool
 
 // Ler -> Modificar -> Sobrescrever
 
@@ -39,6 +39,21 @@ func leEescreveNoJson(path string, task string) (int, error) {
 	return newTask.ID, nil
 }
 
+func list() string {
+	var tasks []Task
+
+	data, _ := os.ReadFile(DB_PATH)
+	json.Unmarshal(data, &tasks)
+
+	msg := "ID - Title - Status \n\n"
+
+	for _, task := range tasks {
+		msg += fmt.Sprintf("%v - %v - %v\n", task.ID, task.Title, task.Status)
+	}
+	msg += fmt.Sprintf("\n\nTotal de tarefas: %d\n", len(tasks))
+	return msg
+}
+
 func add(title string) string {
 	id, err := leEescreveNoJson(DB_PATH, title)
 
@@ -63,5 +78,9 @@ func main() {
 			msg := add(args[1])
 			fmt.Println(msg)
 		}
+	}
+	if args[0] == "list" {
+		msg := list()
+		fmt.Println(msg)
 	}
 }
