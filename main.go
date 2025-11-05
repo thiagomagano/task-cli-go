@@ -39,30 +39,49 @@ func leEescreveNoJson(path string, task string) (int, error) {
 	return newTask.ID, nil
 }
 
-func list() string {
+func getTasks() ([]Task, error) {
 	var tasks []Task
 
-	data, _ := os.ReadFile(DB_PATH)
-	json.Unmarshal(data, &tasks)
+	data, err := os.ReadFile(DB_PATH)
 
-	msg := "ID - Title - Status \n\n"
-
-	for _, task := range tasks {
-		msg += fmt.Sprintf("%v - %v - %v\n", task.ID, task.Title, task.Status)
+	if err != nil {
+		msg := fmt.Errorf("Ocorreu um erro ao ler tasks do db: %w", err)
+		fmt.Println(msg)
+		return []Task{}, err
+	} else {
+		json.Unmarshal(data, &tasks)
 	}
-	msg += fmt.Sprintf("\n\nTotal de tarefas: %d\n", len(tasks))
-	return msg
+
+	return tasks, nil
 }
 
-func add(title string) string {
+func list() {
+	tasks, err := getTasks()
+
+	if err != nil {
+		return
+	}
+
+	msg := "======== Listando Tasks ========= \n\n"
+
+	for _, task := range tasks {
+		msg += fmt.Sprintf("- [ ] %v\n", task.Title)
+	}
+	msg += fmt.Sprintf("\n\nTotal de tarefas: %d\n", len(tasks))
+
+	fmt.Println(msg)
+}
+
+func add(title string) {
 	id, err := leEescreveNoJson(DB_PATH, title)
 
 	if err != nil {
 		fmt.Printf("Erro encontrado: %s", err)
+		return
 	}
 
-	return fmt.Sprintf("Tarefa adicionada com sucesso ID: %d", id)
-
+	msg := fmt.Sprintf("Tarefa adicionada com sucesso ID: %d", id)
+	fmt.Println(msg)
 }
 
 func main() {
@@ -72,15 +91,17 @@ func main() {
 	}
 	// all args (excluding program name)
 	args := os.Args[1:]
+	//Primeiro argumento 'comando'
+	command := args[0]
 
-	if args[0] == "add" {
+	switch command {
+	case "add":
 		if args[1] != "" {
-			msg := add(args[1])
-			fmt.Println(msg)
+			//Segundo argumento no comando add 'titulo' da task
+			title := args[1]
+			add(title)
 		}
-	}
-	if args[0] == "list" {
-		msg := list()
-		fmt.Println(msg)
+	case "list":
+		list()
 	}
 }

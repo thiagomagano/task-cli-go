@@ -1,32 +1,7 @@
 [
   {
     "id": 1,
-    "title": "Coisa",
-    "status": "todo"
-  },
-  {
-    "id": 2,
-    "title": "Coisa 2",
-    "status": "todo"
-  },
-  {
-    "id": 3,
-    "title": "Coisa 3",
-    "status": "todo"
-  },
-  {
-    "id": 4,
-    "title": "Curso de memoria C",
-    "status": "todo"
-  },
-  {
-    "id": 5,
-    "title": "Completar o livro for the love of go s2",
-    "status": "todo"
-  },
-  {
-    "id": 6,
-    "title": "aprender a buildar em go",
+    "title": "Refatorar Switch case",
     "status": "todo"
   }
 ]
