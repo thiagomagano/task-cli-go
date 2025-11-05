@@ -2,6 +2,16 @@
   {
     "id": 1,
     "title": "Refatorar Switch case",
+    "status": "done"
+  },
+  {
+    "id": 2,
+    "title": "Refatorar Funcoes de apoio",
     "status": "todo"
+  },
+  {
+    "id": 3,
+    "title": "Configurar a string de saida conforme status",
+    "status": "in-progress"
   }
 ]

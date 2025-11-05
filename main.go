@@ -16,30 +16,30 @@ const DB_PATH = "db.json" //Caminho para o arquivo // Connection Pool
 
 // Ler -> Modificar -> Sobrescrever
 
-func leEescreveNoJson(path string, task string) (int, error) {
+func insert(task string) (int, error) {
 	var tasks []Task
 
 	//Caso arquivo não exista, cria vazio
-	if _, err := os.Stat(path); os.IsNotExist(err) {
+	if _, err := os.Stat(DB_PATH); os.IsNotExist(err) {
 		tasks = []Task{}
 	} else {
 		// Le os arquivos e coloca num slice array
-		data, _ := os.ReadFile(path)
+		data, _ := os.ReadFile(DB_PATH)
 		json.Unmarshal(data, &tasks)
 	}
 
-	// adiciona nova tarefa
+	// adiciona nova tarefa - Refatorar como conseguir o ultimo ID cadastrado
 	newTask := Task{ID: len(tasks) + 1, Title: task, Status: "todo"}
 	tasks = append(tasks, newTask)
 
 	// Salva tarefa no 'banco'
 	data, _ := json.MarshalIndent(tasks, "", "  ")
-	os.WriteFile(path, data, 0644)
+	os.WriteFile(DB_PATH, data, 0644)
 
 	return newTask.ID, nil
 }
 
-func getTasks() ([]Task, error) {
+func getAll() ([]Task, error) {
 	var tasks []Task
 
 	data, err := os.ReadFile(DB_PATH)
@@ -56,7 +56,7 @@ func getTasks() ([]Task, error) {
 }
 
 func list() {
-	tasks, err := getTasks()
+	tasks, err := getAll()
 
 	if err != nil {
 		return
@@ -65,15 +65,24 @@ func list() {
 	msg := "======== Listando Tasks ========= \n\n"
 
 	for _, task := range tasks {
-		msg += fmt.Sprintf("- [ ] %v\n", task.Title)
+
+		switch task.Status {
+		case "in-progress":
+			msg += fmt.Sprintf("- [ ] ->  %v (fazendo)", task.Title)
+		case "done":
+			msg += fmt.Sprintf("- [x] %v\n", task.Title)
+		default:
+			msg += fmt.Sprintf("- [ ] %v\n", task.Title)
+
+		}
 	}
-	msg += fmt.Sprintf("\n\nTotal de tarefas: %d\n", len(tasks))
 
 	fmt.Println(msg)
+	fmt.Printf("\n\nTotal de tarefas: %d\n", len(tasks))
 }
 
 func add(title string) {
-	id, err := leEescreveNoJson(DB_PATH, title)
+	id, err := insert(title)
 
 	if err != nil {
 		fmt.Printf("Erro encontrado: %s", err)
